@@ -41,7 +41,7 @@ const Header = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          ✨ 100% Natural | No Preservatives | Hygienically Packed ✨
+          ✨ 1000% Natural | No Preservatives | Hygienically Packed ✨
         </motion.p>
       </div>
 
