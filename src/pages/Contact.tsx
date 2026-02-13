@@ -34,18 +34,18 @@ const Contact = () => {
   const contactInfo = [
     {
       icon: MapPin,
-      title: 'Visit Us',
-      details: ['123 Spice Market Lane', 'Chennai, Tamil Nadu 600001'],
+      title: 'Registered Office',
+      details: ['Door No: #28-251, R S No: 366/2B', 'YSR Colony Road, Jakkamapudi', 'Vijayawada, AP - 520012'],
     },
     {
       icon: Phone,
-      title: 'Call Us',
-      details: ['+91 98765 43210', '+91 98765 43211'],
+      title: 'Customer Care',
+      details: ['93983 62452'],
     },
     {
       icon: Mail,
-      title: 'Email Us',
-      details: ['hello@bvrspices.com', 'support@bvrspices.com'],
+      title: 'Official Email',
+      details: ['bvrspices@gmail.com'],
     },
     {
       icon: Clock,
@@ -58,6 +58,13 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="relative h-[50vh] flex items-center overflow-hidden bg-stone-950">
+        <div className="absolute inset-0">
+          <img 
+            src="/brand-assets/hero.png" 
+            alt="Contact Hero" 
+            className="w-full h-full object-cover opacity-30"
+          />
+        </div>
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-950 to-transparent" />
         <div className="container-custom relative z-10 pt-20">
           <motion.div
@@ -273,13 +280,13 @@ const Contact = () => {
               For urgent procurement or wholesale inquiries, please contact our head office directly.
             </p>
             <div className="flex flex-col md:flex-row justify-center gap-8 md:gap-16">
-              <a href="tel:+919876543210" className="group">
+              <a href="tel:+919398362452" className="group">
                 <span className="block text-xs uppercase tracking-[0.4em] text-stone-400 mb-2">Hotline</span>
-                <span className="text-2xl font-bold text-primary group-hover:underline underline-offset-8">+91 98765 43210</span>
+                <span className="text-2xl font-bold text-primary group-hover:underline underline-offset-8">+91 93983 62452</span>
               </a>
-              <a href="mailto:concierge@bvrspices.com" className="group">
+              <a href="mailto:bvrspices@gmail.com" className="group">
                 <span className="block text-xs uppercase tracking-[0.4em] text-stone-400 mb-2">Direct Email</span>
-                <span className="text-2xl font-bold text-primary group-hover:underline underline-offset-8">concierge@bvrspices.com</span>
+                <span className="text-2xl font-bold text-primary group-hover:underline underline-offset-8">bvrspices@gmail.com</span>
               </a>
             </div>
           </motion.div>

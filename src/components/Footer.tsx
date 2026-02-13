@@ -118,24 +118,20 @@ const Footer = () => {
               Our Parlour
             </h4>
             <ul className="space-y-6">
-              <li className="flex items-start gap-4">
-                <MapPin className="w-5 h-5 text-secondary flex-shrink-0 mt-0.5" />
-                <span className="text-stone-400 text-sm leading-relaxed">
-                  123 Spice Market Lane, Ancient District<br />
-                  Chennai, Tamil Nadu 600001
+              <li className="flex items-start gap-3 text-stone-400 group">
+                <MapPin className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                <span className="text-sm">
+                  Door No: #28-251, Jakkamapudi<br />
+                  Vijayawada, AP - 520012
                 </span>
               </li>
-              <li className="flex items-center gap-4">
-                <Phone className="w-5 h-5 text-secondary flex-shrink-0" />
-                <span className="text-stone-400 text-sm">
-                  +91 98765 43210
-                </span>
+              <li className="flex items-center gap-3 text-stone-400 group">
+                <Phone className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                <span className="text-sm">93983 62452</span>
               </li>
-              <li className="flex items-center gap-4">
-                <Mail className="w-5 h-5 text-secondary flex-shrink-0" />
-                <span className="text-stone-400 text-sm">
-                  concierge@bvrspices.com
-                </span>
+              <li className="flex items-center gap-3 text-stone-400 group">
+                <Mail className="w-5 h-5 text-secondary group-hover:scale-110 transition-transform" />
+                <span className="text-sm">bvrspices@gmail.com</span>
               </li>
             </ul>
 

@@ -47,7 +47,7 @@ const About = () => {
             initial={{ scale: 1.2, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.5 }}
             transition={{ duration: 2 }}
-            src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2600&auto=format&fit=crop"
+            src="/brand-assets/premium-spice-bg-3.png"
             alt="About BVR Heritage"
             className="w-full h-full object-cover"
           />
@@ -99,7 +99,7 @@ const About = () => {
             >
               <div className="aspect-[4/5] rounded-[3rem] overflow-hidden">
                 <img
-                  src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?q=80&w=2574&auto=format&fit=crop"
+                  src="/brand-assets/premium-spice-bg-1.png"
                   alt="Ancient Spice Trade"
                   className="w-full h-full object-cover"
                 />
@@ -127,12 +127,18 @@ const About = () => {
                   deserved better access to pure, authentic spices that honoed the 
                   sensory depth of traditional cooking.
                 </p>
-                <p>
-                  What began as a passionate pursuit in Chennai has flourished into 
-                  a benchmark for quality. Every grain of spice we produce carries the 
-                  founder's uncompromising vision: zero fillers, zero shortcuts, 
-                  total transparency.
-                </p>
+                <ul className="list-disc list-inside space-y-4">
+                  {[
+                    { title: "100% Pure & Natural", desc: "No artificial additives, preservatives, or colors. Just pure spice as nature intended." },
+                    { title: "Rich Aroma & Freshness", desc: "Sun-dried and stone-ground to preserve the natural oils and deep fragrance." },
+                    { title: "Hygienically Processed", desc: "Maintaining modern standards of hygiene and quality at every step of production." },
+                    { title: "Premium Assurance", desc: "Every product reflects our commitment to trust and excellence, tested for purity." }
+                  ].map((value, idx) => (
+                    <li key={idx}>
+                      <strong className="text-white">{value.title}:</strong> {value.desc}
+                    </li>
+                  ))}
+                </ul>
                 <p>
                   We don't just sell spices; we curate the alchemy of your kitchen, 
                   ensuring that the heritage of Indian flavor is preserved for 
@@ -157,12 +163,14 @@ const About = () => {
             className="text-center mb-24"
           >
             <span className="text-secondary font-bold text-sm uppercase tracking-[0.4em] mb-6 block">Our Methodology</span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">
-              The Path of <span className="text-secondary italic">Perfection</span>
-            </h2>
-            <p className="text-stone-400 max-w-2xl mx-auto font-light leading-relaxed">
-              From the deep roots of our soil to the final seal of purity, 
-              we maintain a non-negotiable standard of excellence.
+            <h1 className="font-heading text-5xl md:text-7xl font-bold text-white mb-6">
+              Where <span className="text-secondary italic">Quality</span> <br />
+              Meets <span className="text-stone-400">Flavor.</span>
+            </h1>
+            <p className="text-stone-300 text-lg md:text-xl max-w-2xl font-light leading-relaxed">
+              At BVR Spices, we bring the authentic taste of tradition to every kitchen. 
+              Based in Vijayawada, we are committed to delivering high-quality, pure, 
+              and flavorful spices sourced from the finest farms.
             </p>
           </motion.div>
 

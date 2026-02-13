@@ -35,7 +35,7 @@ const Products = () => {
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.4 }}
             transition={{ duration: 1.5 }}
-            src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2600&auto=format&fit=crop"
+            src="/brand-assets/premium-spice-bg-ultra.png"
             alt="Products Header"
             className="w-full h-full object-cover"
           />

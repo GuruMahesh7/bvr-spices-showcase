@@ -31,7 +31,7 @@ const Home = () => {
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.6 }}
             transition={{ duration: 2, ease: "easeOut" }}
-            src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2600&auto=format&fit=crop"
+            src="/brand-assets/hero.png"
             alt="Cinematic Spice Background"
             className="w-full h-full object-cover"
           />
@@ -169,7 +169,7 @@ const Home = () => {
             >
               <div className="aspect-[4/5] rounded-[3rem] overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?q=80&w=2574&auto=format&fit=crop" 
+                  src="/brand-assets/premium-spice-bg-1.png" 
                   alt="Ancient Spice Trade Heritage"
                   className="w-full h-full object-cover"
                 />
@@ -338,7 +338,7 @@ const Home = () => {
                 <motion.img
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  src="https://images.unsplash.com/photo-1532336414038-cf19250c5757?q=80&w=2000&auto=format&fit=crop"
+                  src="/brand-assets/premium-spice-bg-2.png"
                   alt="Spice Perfection"
                   className="w-full"
                 />
@@ -654,7 +654,7 @@ const Home = () => {
       <section className="section-padding bg-stone-950 text-white relative overflow-hidden">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2600&auto=format&fit=crop" 
+            src="/brand-assets/premium-spice-bg-ultra.png" 
             alt="Final CTA Background" 
             className="w-full h-full object-cover opacity-20 scale-110 blur-sm"
           />
