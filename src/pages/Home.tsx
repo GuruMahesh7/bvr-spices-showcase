@@ -67,7 +67,7 @@ const Home = () => {
                 transition={{ delay: 0.6, duration: 0.8 }}
                 className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] mb-8"
               >
-                The Spirit of <br />
+                The Spir of <br />
                 <span className="text-secondary italic">Indian Heritage</span> <br />
                 in Every Pinch.
               </motion.h1>
