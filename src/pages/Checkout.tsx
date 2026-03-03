@@ -82,6 +82,7 @@ const Checkout = () => {
             qty: item.quantity,
             image: item.image,
             price: item.price,
+            weight: item.weight,
             product: item.id,
           })),
           shippingAddress: {
@@ -420,7 +421,7 @@ const Checkout = () => {
 
                 <div className="space-y-6 mb-10 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
                   {items.map((item) => (
-                    <div key={item.id} className="flex gap-4 group">
+                    <div key={`${item.id}-${item.weight}`} className="flex gap-4 group">
                       <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 border border-white/10 group-hover:border-secondary/50 transition-colors">
                         <img
                           src={item.image}

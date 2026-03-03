@@ -6,6 +6,7 @@ export interface OrderItem {
     qty: number;
     image: string;
     price: number;
+    weight?: string;
     product: string;
 }
 

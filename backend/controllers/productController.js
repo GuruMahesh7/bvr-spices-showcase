@@ -56,6 +56,7 @@ const createProduct = asyncHandler(async (req, res) => {
         price: 0,
         user: req.user._id,
         image: '/images/sample.jpg',
+        images: ['/images/sample.jpg'],
         brand: 'BVR Spices',
         category: 'Powders',
         countInStock: 0,
@@ -64,7 +65,10 @@ const createProduct = asyncHandler(async (req, res) => {
         weight: '100g',
         ingredients: 'Sample ingredients',
         usageTips: 'Sample usage tips',
-        isBestSeller: false
+        isBestSeller: false,
+        variants: [
+            { weight: '100g', price: 0, countInStock: 0 }
+        ]
     });
 
     const createdProduct = await product.save();
@@ -80,13 +84,15 @@ const updateProduct = asyncHandler(async (req, res) => {
         price,
         description,
         image,
+        images,
         brand,
         category,
         countInStock,
         weight,
         ingredients,
         usageTips,
-        isBestSeller
+        isBestSeller,
+        variants
     } = req.body;
 
     const product = await Product.findById(req.params.id);
@@ -96,6 +102,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.price = price !== undefined ? price : product.price;
         product.description = description || product.description;
         product.image = image || product.image;
+        product.images = images || product.images;
         product.brand = brand || product.brand;
         product.category = category || product.category;
         product.countInStock = countInStock !== undefined ? countInStock : product.countInStock;
@@ -103,6 +110,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.ingredients = ingredients || product.ingredients;
         product.usageTips = usageTips || product.usageTips;
         product.isBestSeller = isBestSeller !== undefined ? isBestSeller : product.isBestSeller;
+        product.variants = variants || product.variants;
 
         const updatedProduct = await product.save();
         res.json(updatedProduct);
