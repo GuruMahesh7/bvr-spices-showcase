@@ -35,11 +35,13 @@ const ProductManager = () => {
         countInStock: '',
         description: '',
         image: '',
+        images: [] as string[],
         brand: 'BVR Spices',
         weight: '',
         ingredients: '',
         usageTips: '',
-        isBestSeller: false
+        isBestSeller: false,
+        variants: [] as { weight: string, price: string, countInStock: string }[]
     });
 
     const fetchProducts = async () => {
@@ -78,11 +80,13 @@ const ProductManager = () => {
             countInStock: product.countInStock,
             description: product.description,
             image: product.image,
+            images: product.images || [product.image],
             brand: product.brand || 'BVR Spices',
             weight: product.weight || '',
             ingredients: product.ingredients || '',
             usageTips: product.usageTips || '',
-            isBestSeller: product.isBestSeller || false
+            isBestSeller: product.isBestSeller || false,
+            variants: product.variants || []
         });
         setShowModal(true);
     };
@@ -96,32 +100,51 @@ const ProductManager = () => {
             countInStock: '',
             description: '',
             image: '',
+            images: [],
             brand: 'BVR Spices',
             weight: '',
             ingredients: '',
             usageTips: '',
-            isBestSeller: false
+            isBestSeller: false,
+            variants: []
         });
         setShowModal(true);
     };
 
-    const uploadFileHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+    const uploadFileHandler = async (e: React.ChangeEvent<HTMLInputElement>, isMultiple = false) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
 
-        const uploadFormData = new FormData();
-        uploadFormData.append('image', file);
         setUploading(true);
 
         try {
-            const data = await adminService.uploadImage(uploadFormData);
-            // If it's already a full URL (Cloudinary), use it directly
-            const imagePath = data.image.startsWith('http')
-                ? data.image
-                : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${data.image}`;
+            const uploadedUrls: string[] = [];
 
-            setFormData({ ...formData, image: imagePath });
-            toast.success('Image uploaded successfully');
+            for (let i = 0; i < files.length; i++) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('image', files[i]);
+                const data = await adminService.uploadImage(uploadFormData);
+                const imagePath = data.image.startsWith('http')
+                    ? data.image
+                    : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${data.image}`;
+                uploadedUrls.push(imagePath);
+            }
+
+            if (isMultiple) {
+                setFormData(prev => ({
+                    ...prev,
+                    images: [...prev.images, ...uploadedUrls],
+                    // If primary image is empty, set it to the first uploaded one
+                    image: prev.image || uploadedUrls[0]
+                }));
+            } else {
+                setFormData(prev => ({
+                    ...prev,
+                    image: uploadedUrls[0],
+                    images: prev.images.length === 0 ? [uploadedUrls[0]] : prev.images
+                }));
+            }
+            toast.success(`Image${files.length > 1 ? 's' : ''} uploaded successfully`);
         } catch (error) {
             toast.error('Failed to upload image');
         } finally {
@@ -129,18 +152,63 @@ const ProductManager = () => {
         }
     };
 
+    const addVariant = () => {
+        setFormData({
+            ...formData,
+            variants: [...formData.variants, { weight: '', price: '', countInStock: '' }]
+        });
+    };
+
+    const removeVariant = (index: number) => {
+        const newVariants = [...formData.variants];
+        newVariants.splice(index, 1);
+        setFormData({ ...formData, variants: newVariants });
+    };
+
+    const handleVariantChange = (index: number, field: string, value: string) => {
+        const newVariants = [...formData.variants];
+        (newVariants[index] as any)[field] = value;
+        setFormData({ ...formData, variants: newVariants });
+    };
+
+    const removeImage = (index: number) => {
+        const newImages = [...formData.images];
+        const removedImage = newImages.splice(index, 1)[0];
+        setFormData(prev => {
+            const update: any = { ...prev, images: newImages };
+            if (prev.image === removedImage) {
+                update.image = newImages[0] || '';
+            }
+            return update;
+        });
+    };
+
+    const setPrimaryImage = (url: string) => {
+        setFormData({ ...formData, image: url });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormLoading(true);
+
+        const formattedData = {
+            ...formData,
+            price: Number(formData.price),
+            countInStock: Number(formData.countInStock),
+            variants: formData.variants.map(v => ({
+                ...v,
+                price: Number(v.price),
+                countInStock: Number(v.countInStock)
+            }))
+        };
+
         try {
             if (editingProduct) {
-                await adminService.updateProduct(editingProduct._id, formData);
+                await adminService.updateProduct(editingProduct._id, formattedData);
                 toast.success('Product updated successfully');
             } else {
-                // In a real app, we might call a specific create endpoint
-                // But our adminService.createProduct just creates a sample, so let's update it immediately
                 const newProduct = await adminService.createProduct();
-                await adminService.updateProduct(newProduct._id, formData);
+                await adminService.updateProduct(newProduct._id, formattedData);
                 toast.success('Product created successfully');
             }
             setShowModal(false);
@@ -398,40 +466,147 @@ const ProductManager = () => {
                                     {/* Right Column */}
                                     <div className="space-y-6">
                                         <div>
-                                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Image URL</label>
+                                            <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Main Product Image</label>
                                             <div className="flex gap-2">
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium"
+                                                    className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all font-medium text-sm"
                                                     value={formData.image}
                                                     onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                                    placeholder="https://..."
+                                                    placeholder="Main image URL..."
                                                 />
                                                 <input
                                                     type="file"
                                                     id="image-file"
                                                     className="hidden"
-                                                    onChange={uploadFileHandler}
+                                                    onChange={(e) => uploadFileHandler(e, false)}
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => document.getElementById('image-file')?.click()}
-                                                    disabled={uploading}
-                                                    className="p-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors border border-gray-200 disabled:opacity-50"
+                                                    className="p-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors border border-gray-200"
                                                 >
-                                                    {uploading ? (
-                                                        <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                                                    ) : (
-                                                        <Upload size={20} />
-                                                    )}
+                                                    <Upload size={20} />
                                                 </button>
                                             </div>
-                                            {formData.image && (
-                                                <div className="mt-4 w-full h-40 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden italic shadow-inner bg-gray-50/50">
-                                                    <img src={formData.image} alt="Preview" className="w-full h-full object-contain p-2" />
+
+                                            <div className="mt-6">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <label className="block text-sm font-bold text-gray-700 uppercase tracking-wide">Additional Images</label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => document.getElementById('multi-image-file')?.click()}
+                                                        className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1"
+                                                    >
+                                                        <Plus size={14} /> Add Images
+                                                    </button>
+                                                    <input
+                                                        type="file"
+                                                        id="multi-image-file"
+                                                        multiple
+                                                        className="hidden"
+                                                        onChange={(e) => uploadFileHandler(e, true)}
+                                                    />
                                                 </div>
-                                            )}
+
+                                                <div className="grid grid-cols-4 gap-2">
+                                                    {formData.images.map((img, idx) => (
+                                                        <div key={idx} className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${formData.image === img ? 'border-red-500 ring-2 ring-red-500/20' : 'border-gray-100 hover:border-gray-200'}`}>
+                                                            <img src={img} alt="" className="w-full h-full object-cover" />
+                                                            <div className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => setPrimaryImage(img)}
+                                                                    className="p-1 bg-white text-emerald-600 rounded-md hover:bg-emerald-50"
+                                                                    title="Set as main"
+                                                                >
+                                                                    <CheckCircle2 size={14} />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => removeImage(idx)}
+                                                                    className="p-1 bg-white text-rose-600 rounded-md hover:bg-rose-50"
+                                                                    title="Remove"
+                                                                >
+                                                                    <Trash2 size={14} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => document.getElementById('multi-image-file')?.click()}
+                                                        className="aspect-square rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-500 hover:border-gray-300 transition-all bg-gray-50/50"
+                                                    >
+                                                        <Plus size={20} />
+                                                        <span className="text-[10px] font-bold mt-1 uppercase">Add</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 border-t border-gray-100">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <label className="block text-sm font-bold text-gray-700 uppercase tracking-wide">Product Variants (Weights/Prices)</label>
+                                                <button
+                                                    type="button"
+                                                    onClick={addVariant}
+                                                    className="px-3 py-1.5 bg-gray-900 text-white rounded-lg hover:bg-black transition-colors text-xs font-bold flex items-center gap-1"
+                                                >
+                                                    <Plus size={14} /> Add Variant
+                                                </button>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                {formData.variants.length === 0 ? (
+                                                    <div className="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center">
+                                                        <p className="text-xs text-gray-500 italic">No variants added. The base price and stock will be used.</p>
+                                                    </div>
+                                                ) : (
+                                                    formData.variants.map((variant, idx) => (
+                                                        <div key={idx} className="flex gap-2 items-end bg-gray-50 p-3 rounded-xl border border-gray-100 relative group">
+                                                            <div className="flex-1">
+                                                                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Weight</label>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="100g"
+                                                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                                                                    value={variant.weight}
+                                                                    onChange={(e) => handleVariantChange(idx, 'weight', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <div className="w-24">
+                                                                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Price (₹)</label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="0"
+                                                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                                                                    value={variant.price}
+                                                                    onChange={(e) => handleVariantChange(idx, 'price', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <div className="w-24">
+                                                                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Stock</label>
+                                                                <input
+                                                                    type="number"
+                                                                    placeholder="0"
+                                                                    className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                                                                    value={variant.countInStock}
+                                                                    onChange={(e) => handleVariantChange(idx, 'countInStock', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeVariant(idx)}
+                                                                className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    ))
+                                                )}
+                                            </div>
                                         </div>
 
                                         <div>

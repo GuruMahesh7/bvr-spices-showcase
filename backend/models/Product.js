@@ -11,6 +11,11 @@ const productSchema = mongoose.Schema(
             type: String,
             required: true,
         },
+        images: {
+            type: [String],
+            required: true,
+            default: [],
+        },
         image: {
             type: String,
             required: true,
@@ -38,6 +43,13 @@ const productSchema = mongoose.Schema(
             required: true,
             default: 0,
         },
+        variants: [
+            {
+                weight: { type: String, required: true },
+                price: { type: Number, required: true },
+                countInStock: { type: Number, required: true },
+            }
+        ],
         rating: {
             type: Number,
             required: true,
