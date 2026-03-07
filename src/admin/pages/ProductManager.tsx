@@ -126,7 +126,7 @@ const ProductManager = () => {
                 const data = await adminService.uploadImage(uploadFormData);
                 const imagePath = data.image.startsWith('http')
                     ? data.image
-                    : `${import.meta.env.VITE_API_URL || ''}${data.image}`;
+                    : `${import.meta.env.VITE_API_URL || 'https://bvr-backend.onrender.com'}${data.image}`;
                 uploadedUrls.push(imagePath);
             }
 

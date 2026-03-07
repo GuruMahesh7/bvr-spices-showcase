@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${import.meta.env.VITE_API_URL || ''}/api`;
+const API_URL = `${import.meta.env.VITE_API_URL || 'https://bvr-backend.onrender.com'}/api`;
 
 const getAuthConfig = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
