@@ -126,7 +126,7 @@ const ProductManager = () => {
                 const data = await adminService.uploadImage(uploadFormData);
                 const imagePath = data.image.startsWith('http')
                     ? data.image
-                    : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${data.image}`;
+                    : `${import.meta.env.VITE_API_URL || ''}${data.image}`;
                 uploadedUrls.push(imagePath);
             }
 

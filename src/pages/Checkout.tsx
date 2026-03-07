@@ -5,6 +5,7 @@ import { ArrowLeft, Check, Package, Truck, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/lib/api';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Checkout = () => {
     // Fetch latest user profile to pre-fill data
     const fetchProfile = async () => {
       try {
-        const res = await fetch('/api/users/profile', {
+        const res = await fetch(`${API_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         const data = await res.json();
@@ -98,7 +99,7 @@ const Checkout = () => {
           totalPrice: totalPrice,
         };
 
-        const res = await fetch('/api/orders', {
+        const res = await fetch(`${API_URL}/api/orders`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

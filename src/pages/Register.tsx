@@ -5,6 +5,7 @@ import { Loader2, User, Mail, Lock, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
+import { API_URL } from '@/lib/api';
 
 const Register = () => {
     const [name, setName] = useState('');
@@ -35,7 +36,7 @@ const Register = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('/api/users', {
+            const response = await fetch(`${API_URL}/api/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useMyOrders, Order } from '@/hooks/useOrders';
 import { toast } from 'sonner';
+import { API_URL } from '@/lib/api';
 
 const Profile = () => {
     const { user, login, logout } = useAuth();
@@ -39,7 +40,7 @@ const Profile = () => {
         }
 
         try {
-            const response = await fetch('/api/users/profile', {
+            const response = await fetch(`${API_URL}/api/users/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ const Profile = () => {
     const handleAddAddress = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/users/address', {
+            const response = await fetch(`${API_URL}/api/users/address`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ const Profile = () => {
     const handleDeleteAddress = async (addressId: string) => {
         if (!confirm('Are you sure you want to delete this address?')) return;
         try {
-            const response = await fetch(`/api/users/address/${addressId}`, {
+            const response = await fetch(`${API_URL}/api/users/address/${addressId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${user?.token}`,
