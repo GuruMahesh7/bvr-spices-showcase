@@ -1,5 +1,6 @@
 import { useAuth } from '@/context/AuthContext';
 import { Product, CartItem } from '@/context/CartContext';
+import { API_URL } from '@/lib/api';
 
 export const useCartApi = () => {
     const { user } = useAuth();
@@ -7,7 +8,7 @@ export const useCartApi = () => {
 
     const fetchCart = async () => {
         if (!token) return { cartItems: [] };
-        const response = await fetch('/api/cart', {
+        const response = await fetch(`${API_URL}/api/cart`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -18,7 +19,7 @@ export const useCartApi = () => {
 
     const addToCartApi = async (productId: string, qty: number) => {
         if (!token) return;
-        const response = await fetch('/api/cart', {
+        const response = await fetch(`${API_URL}/api/cart`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,7 +33,7 @@ export const useCartApi = () => {
 
     const removeFromCartApi = async (productId: string) => {
         if (!token) return;
-        const response = await fetch(`/api/cart/${productId}`, {
+        const response = await fetch(`${API_URL}/api/cart/${productId}`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -44,7 +45,7 @@ export const useCartApi = () => {
 
     const clearCartApi = async () => {
         if (!token) return;
-        const response = await fetch('/api/cart', {
+        const response = await fetch(`${API_URL}/api/cart`, {
             method: 'DELETE',
             headers: {
                 Authorization: `Bearer ${token}`,

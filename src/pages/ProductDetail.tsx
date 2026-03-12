@@ -13,6 +13,8 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [activeImage, setActiveImage] = useState('');
 
   const { data: product, isLoading, error } = useProduct(id || '');
   const { data: allProducts } = useProducts();
@@ -38,6 +40,22 @@ const ProductDetail = () => {
     );
   }
 
+  // Initialize selectedVariant and activeImage
+  useMemo(() => {
+    if (product) {
+      if (product.variants && product.variants.length > 0) {
+        setSelectedVariant(product.variants[0]);
+      } else {
+        setSelectedVariant({ weight: product.weight || 'Default', price: product.price, countInStock: product.countInStock });
+      }
+      setActiveImage(product.image);
+    }
+  }, [product]);
+
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+  const displayStock = selectedVariant ? selectedVariant.countInStock : product.countInStock;
+  const productImages = product.images && product.images.length > 0 ? product.images : [product.image];
+
   const relatedProducts = allProducts
     ? allProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
     : [];
@@ -57,7 +75,13 @@ const ProductDetail = () => {
   ];
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
+    const itemToAdd = {
+      ...product,
+      price: displayPrice,
+      weight: selectedVariant ? selectedVariant.weight : product.weight,
+      variantId: selectedVariant ? selectedVariant._id : null
+    };
+    addToCart(itemToAdd, quantity);
   };
 
   return (
@@ -79,26 +103,46 @@ const ProductDetail = () => {
       <section className="py-20 overflow-hidden">
         <div className="container-custom">
           <div className="grid lg:grid-cols-2 gap-20 items-start">
-            {/* Left: Cinematic Image */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 1 }}
-              className="relative"
+              className="space-y-6"
             >
               <div className="aspect-[4/5] rounded-[3rem] overflow-hidden bg-stone-50 shadow-2xl relative group">
-                <motion.img
-                  layoutId={`product-image-${product.id}`}
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImage}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    src={activeImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
+                </AnimatePresence>
                 <div className="absolute inset-0 bg-stone-900/10 transition-opacity group-hover:opacity-0" />
               </div>
 
+              {/* Thumbnail Gallery */}
+              {productImages.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                  {productImages.map((img: string, idx: number) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(img)}
+                      className={`relative w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${activeImage === img ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-stone-200'}`}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
               {/* Floating Accents */}
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-[80px]" />
-              <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-primary/5 rounded-full blur-[100px]" />
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-secondary/10 rounded-full blur-[80px] -z-10" />
+              <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-primary/5 rounded-full blur-[100px] -z-10" />
             </motion.div>
 
             {/* Right: Sophisticated Content */}
@@ -115,20 +159,43 @@ const ProductDetail = () => {
               </h1>
 
               <div className="flex items-baseline gap-3 mb-6">
-                <span className="text-3xl font-bold text-primary">₹{typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</span>
+                <span className="text-3xl font-bold text-primary">₹{typeof displayPrice === 'number' ? displayPrice.toLocaleString() : displayPrice}</span>
                 {product.originalPrice && (
-                  <>
-                    <span className="text-xl text-muted-foreground line-through">
-                      ₹{typeof product.originalPrice === 'number' ? product.originalPrice.toFixed(2) : product.originalPrice}
-                    </span>
-                    <span className="text-sm bg-secondary/20 text-secondary-foreground px-2 py-1 rounded">
-                      {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                    </span>
-                  </>
+                  <span className="text-xl text-muted-foreground line-through">
+                    ₹{product.originalPrice.toLocaleString()}
+                  </span>
                 )}
               </div>
 
-              <p className="text-muted-foreground mb-4">{product.weight}</p>
+              {/* Variant Selector */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="mb-8">
+                  <label className="block text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">Select Weight</label>
+                  <div className="flex flex-wrap gap-3">
+                    {product.variants.map((variant: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`px-6 py-3 rounded-2xl border-2 transition-all font-bold text-sm ${selectedVariant?.weight === variant.weight
+                          ? 'border-primary bg-primary/5 text-primary shadow-lg shadow-primary/10'
+                          : 'border-stone-100 hover:border-stone-200 text-stone-600'}`}
+                      >
+                        {variant.weight}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <p className="text-stone-500 font-medium mb-4 flex items-center gap-2">
+                {selectedVariant ? selectedVariant.weight : product.weight}
+                <span className="w-1 h-1 rounded-full bg-stone-300" />
+                {displayStock > 0 ? (
+                  <span className="text-emerald-600">In Stock</span>
+                ) : (
+                  <span className="text-rose-600">Out of Stock</span>
+                )}
+              </p>
 
               {/* Highlights */}
               <div className="flex flex-wrap gap-3 mb-8">
@@ -168,22 +235,13 @@ const ProductDetail = () => {
 
                 <button
                   onClick={handleAddToCart}
-                  className="btn-premium flex-1 w-full justify-center !py-6"
+                  disabled={displayStock <= 0}
+                  className="btn-premium flex-1 w-full justify-center !py-6 disabled:opacity-50 disabled:grayscale"
                 >
                   <ShoppingCart className="w-5 h-5 mr-3" />
-                  Add to Collection • ₹{product.price * quantity}
+                  {displayStock > 0 ? `Add to Collection • ₹${(displayPrice * quantity).toLocaleString()}` : 'Out of Stock'}
                 </button>
               </div>
-
-              {/* Add to Cart Button */}
-              <Button
-                size="xl"
-                className="w-full md:w-auto btn-primary"
-                onClick={handleAddToCart}
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart - ₹{(product.price * quantity).toFixed(2)}
-              </Button>
 
               {/* Tabs */}
               <div className="mt-12">

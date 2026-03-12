@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
+import { API_URL } from '@/lib/api';
 
 export interface OrderItem {
     name: string;
     qty: number;
     image: string;
     price: number;
+    weight?: string;
     product: string;
 }
 
@@ -45,7 +47,7 @@ export const useMyOrders = () => {
         queryFn: async () => {
             if (!user?.token) return [];
 
-            const response = await fetch('/api/orders/myorders', {
+            const response = await fetch(`${API_URL}/api/orders/myorders`, {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },

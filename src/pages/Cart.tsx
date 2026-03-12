@@ -64,7 +64,7 @@ const Cart = () => {
               <AnimatePresence>
                 {items.map((item, index) => (
                   <motion.div
-                    key={item.id}
+                    key={`${item.id}-${item.weight}`}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20, height: 0 }}
@@ -98,7 +98,7 @@ const Cart = () => {
                           </div>
                         </div>
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.weight)}
                           className="w-8 h-8 rounded-full flex items-center justify-center text-stone-300 hover:text-destructive hover:bg-destructive/5 transition-all"
                         >
                           <X className="w-4 h-4" />
@@ -110,14 +110,14 @@ const Cart = () => {
                         <div className="flex items-center gap-4 bg-stone-50 rounded-full p-1 border border-stone-100">
                           <button
                             className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-white hover:shadow-sm transition-all"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.weight)}
                           >
                             <Minus className="w-3 h-3 text-stone-500" />
                           </button>
                           <span className="w-6 text-center font-bold text-stone-900 text-sm">{item.quantity}</span>
                           <button
                             className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-white hover:shadow-sm transition-all"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.weight)}
                           >
                             <Plus className="w-3 h-3 text-stone-500" />
                           </button>
@@ -163,7 +163,7 @@ const Cart = () => {
               <div className="bg-stone-950 text-white rounded-[2rem] p-8 md:p-10 sticky top-24 border border-white/5 shadow-2xl overflow-hidden relative group">
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full blur-[60px] group-hover:bg-secondary/20 transition-all duration-700" />
-                
+
                 <h2 className="font-heading text-2xl font-bold mb-8 flex items-center gap-3">
                   Summary
                   <div className="h-[1px] flex-1 bg-white/10" />

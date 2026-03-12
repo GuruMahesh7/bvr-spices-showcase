@@ -11,9 +11,12 @@ const mapProduct = (p: any): Product => ({
     price: p.price,
     originalPrice: p.price * 1.2, // Mock original price
     image: p.image,
+    images: p.images || [p.image],
     category: p.category,
     description: p.description,
-    weight: p.weight || '250g',
+    weight: p.weight || '100g',
+    variants: p.variants || [],
+    countInStock: p.countInStock,
     ingredients: p.ingredients,
     usage: p.usageTips, // Backend uses usageTips
     badge: p.isBestSeller ? 'Bestseller' : undefined,

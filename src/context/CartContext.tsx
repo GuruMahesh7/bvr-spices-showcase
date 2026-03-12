@@ -3,15 +3,25 @@ import { toast } from 'sonner';
 import { useAuth } from './AuthContext';
 import { useCartApi } from '@/hooks/useCartApi';
 
+export interface ProductVariant {
+  _id?: string;
+  weight: string;
+  price: number;
+  countInStock: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   originalPrice?: number;
   image: string;
+  images?: string[];
   category: string;
   description: string;
   weight: string;
+  variants?: ProductVariant[];
+  countInStock?: number;
   ingredients?: string;
   usage?: string;
   storage?: string;
@@ -25,8 +35,8 @@ export interface CartItem extends Product {
 interface CartContextType {
   items: CartItem[];
   addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string, weight?: string) => void;
+  updateQuantity: (productId: string, quantity: number, weight?: string) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -112,7 +122,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // I will update the local state optimistically, AND use that calculated value to call API.
 
         setItems(prevItems => {
-          const existingItem = prevItems.find(item => item.id === product.id);
+          const existingItem = prevItems.find(item => item.id === product.id && item.weight === product.weight);
           let newQty = quantity;
           if (existingItem) {
             newQty = existingItem.quantity + quantity;
@@ -124,7 +134,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           if (existingItem) {
             toast.success(`Updated ${product.name} quantity in cart`);
             return prevItems.map(item =>
-              item.id === product.id ? { ...item, quantity: newQty } : item
+              (item.id === product.id && item.weight === product.weight) ? { ...item, quantity: newQty } : item
             );
           }
           toast.success(`${product.name} added to cart`);
@@ -137,11 +147,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } else {
       // Guest Logic
       setItems(prevItems => {
-        const existingItem = prevItems.find(item => item.id === product.id);
+        const existingItem = prevItems.find(item => item.id === product.id && item.weight === product.weight);
         if (existingItem) {
           toast.success(`Updated ${product.name} quantity in cart`);
           return prevItems.map(item =>
-            item.id === product.id
+            (item.id === product.id && item.weight === product.weight)
               ? { ...item, quantity: item.quantity + quantity }
               : item
           );
@@ -152,32 +162,32 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [user, addToCartApi]);
 
-  const removeFromCart = useCallback(async (productId: string) => {
+  const removeFromCart = useCallback(async (productId: string, weight?: string) => {
     if (user) {
       try {
         await removeFromCartApi(productId);
         setItems(prevItems => {
-          const item = prevItems.find(i => i.id === productId);
+          const item = prevItems.find(i => i.id === productId && (!weight || i.weight === weight));
           if (item) toast.info(`${item.name} removed from cart`);
-          return prevItems.filter(item => item.id !== productId);
+          return prevItems.filter(item => !(item.id === productId && (!weight || item.weight === weight)));
         });
       } catch (e) {
         toast.error("Failed to remove item");
       }
     } else {
       setItems(prevItems => {
-        const item = prevItems.find(i => i.id === productId);
+        const item = prevItems.find(i => i.id === productId && (!weight || i.weight === weight));
         if (item) {
           toast.info(`${item.name} removed from cart`);
         }
-        return prevItems.filter(item => item.id !== productId);
+        return prevItems.filter(item => !(item.id === productId && (!weight || item.weight === weight)));
       });
     }
   }, [user, removeFromCartApi]);
 
-  const updateQuantity = useCallback(async (productId: string, quantity: number) => {
+  const updateQuantity = useCallback(async (productId: string, quantity: number, weight?: string) => {
     if (quantity < 1) {
-      removeFromCart(productId);
+      removeFromCart(productId, weight);
       return;
     }
     if (user) {
@@ -185,7 +195,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         await addToCartApi(productId, quantity); // Backend sets quantity, perfect for update
         setItems(prevItems =>
           prevItems.map(item =>
-            item.id === productId ? { ...item, quantity } : item
+            (item.id === productId && (!weight || item.weight === weight)) ? { ...item, quantity } : item
           )
         );
       } catch (e) {
@@ -194,7 +204,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } else {
       setItems(prevItems =>
         prevItems.map(item =>
-          item.id === productId ? { ...item, quantity } : item
+          (item.id === productId && (!weight || item.weight === weight)) ? { ...item, quantity } : item
         )
       );
     }

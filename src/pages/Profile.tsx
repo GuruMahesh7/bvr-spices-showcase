@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { useMyOrders, Order } from '@/hooks/useOrders';
 import { toast } from 'sonner';
+import { API_URL } from '@/lib/api';
 
 const Profile = () => {
     const { user, login, logout } = useAuth();
@@ -39,7 +40,7 @@ const Profile = () => {
         }
 
         try {
-            const response = await fetch('/api/users/profile', {
+            const response = await fetch(`${API_URL}/api/users/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ const Profile = () => {
     const handleAddAddress = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('/api/users/address', {
+            const response = await fetch(`${API_URL}/api/users/address`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ const Profile = () => {
     const handleDeleteAddress = async (addressId: string) => {
         if (!confirm('Are you sure you want to delete this address?')) return;
         try {
-            const response = await fetch(`/api/users/address/${addressId}`, {
+            const response = await fetch(`${API_URL}/api/users/address/${addressId}`, {
                 method: 'DELETE',
                 headers: {
                     Authorization: `Bearer ${user?.token}`,
@@ -138,8 +139,8 @@ const Profile = () => {
                             <button
                                 onClick={() => setActiveTab('profile')}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'profile'
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <User className="w-4 h-4" />
@@ -148,8 +149,8 @@ const Profile = () => {
                             <button
                                 onClick={() => setActiveTab('addresses')}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'addresses'
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <MapPin className="w-4 h-4" />
@@ -158,8 +159,8 @@ const Profile = () => {
                             <button
                                 onClick={() => setActiveTab('orders')}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeTab === 'orders'
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'hover:bg-muted text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 <Package className="w-4 h-4" />
@@ -391,7 +392,7 @@ const Profile = () => {
                                                                     </div>
                                                                     <div className="flex-1">
                                                                         <p className="font-medium text-sm">{item.name}</p>
-                                                                        <p className="text-xs text-muted-foreground">Qty: {item.qty}</p>
+                                                                        <p className="text-xs text-muted-foreground">Qty: {item.qty} {item.weight && `• ${item.weight}`}</p>
                                                                     </div>
                                                                 </div>
                                                             ))}
