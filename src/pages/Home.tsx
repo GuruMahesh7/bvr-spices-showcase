@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Shield, Leaf, Package, Star, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/ProductCard';
 import { useProducts } from '@/hooks/useProducts';
 
 const Home = () => {
+  const { scrollYProgress } = useScroll();
+  const heroParallaxY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  // Chilli starts above the hero and drops down as user scrolls
+  const floatingSpiceY = useTransform(scrollYProgress, [0, 1], [-200, 300]);
+  const heritageParallaxY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const qualityImageParallaxY = useTransform(scrollYProgress, [0, 1], [60, -60]);
   const { data: products, isLoading } = useProducts();
   const bestsellers = products?.filter(p => p.badge === 'Bestseller').slice(0, 4) || [];
 
@@ -32,6 +38,7 @@ const Home = () => {
             initial={{ scale: 1.1, opacity: 0 }}
             animate={{ scale: 1, opacity: 0.6 }}
             transition={{ duration: 2, ease: "easeOut" }}
+            style={{ y: heroParallaxY }}
             src="/brand-assets/hero.png"
             alt="Cinematic Spice Background"
             className="w-full h-full object-cover"
@@ -40,8 +47,16 @@ const Home = () => {
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-stone-950 to-transparent" />
         </div>
 
-        <div className="container-custom relative z-10 w-full pt-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* Floating chilli that drops with scroll (uses image.png from brand-assets) */}
+        <motion.img
+          style={{ y: floatingSpiceY }}
+          src="/brand-assets/image.png"
+          alt="Floating chilli"
+          className="absolute left-1/2 -translate-x-1/2 top-0 w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full object-contain border-4 border-secondary/40 shadow-premium pointer-events-none"
+        />
+
+        <div className="container-custom relative z-10 w-full pt-24 pb-16 md:pt-28 md:pb-24">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
             {/* Hero Content */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -53,10 +68,10 @@ const Home = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}
-                className="inline-flex items-center gap-2 mb-8"
+                className="inline-flex items-center gap-2 mb-6 md:mb-8"
               >
                 <div className="w-12 h-[1px] bg-secondary" />
-                <span className="text-secondary font-bold text-sm uppercase tracking-[0.4em]">
+                <span className="text-secondary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em]">
                   Premium Quality Since 2010
                 </span>
               </motion.div>
@@ -65,9 +80,9 @@ const Home = () => {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6, duration: 0.8 }}
-                className="font-heading text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[1.1] mb-8"
-              >
-                The Sp of <br />
+                className="font-heading text-3xl sm:text-4xl md:text-6xl lg:text-8xl font-bold text-white leading-[1.1] mb-6 md:mb-8"
+              >     
+                The Spirit of <br />
                 <span className="text-secondary italic">Indian Heritage</span> <br />
                 in Every Pinch.
               </motion.h1>
@@ -76,7 +91,7 @@ const Home = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1, duration: 0.8 }}
-                className="text-xl text-stone-300 mb-12 max-w-xl leading-relaxed font-light"
+                className="text-base sm:text-lg md:text-xl text-stone-300 mb-10 md:mb-12 max-w-xl leading-relaxed font-light"
               >
                 Pure • Authentic • Trusted Spices from BVR Spices. Bringing the
                 essence of traditional Indian cooking to your kitchen.
@@ -86,7 +101,7 @@ const Home = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2, duration: 0.6 }}
-                className="flex flex-col sm:flex-row gap-6"
+                className="flex flex-col sm:flex-row gap-4 sm:gap-6"
               >
                 <Link to="/products">
                   <button className="btn-premium">
@@ -160,13 +175,14 @@ const Home = () => {
       {/* Heritage Story Section (New Premium Section) */}
       <section className="section-padding bg-stone-950 overflow-hidden">
         <div className="container-custom">
-          <div className="grid lg:grid-cols-2 gap-20 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1 }}
               className="relative"
+              style={{ y: heritageParallaxY }}
             >
               <div className="aspect-[4/5] rounded-[3rem] overflow-hidden">
                 <img 
@@ -187,18 +203,18 @@ const Home = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-secondary font-bold text-sm uppercase tracking-[0.4em] mb-6 block">Our Heritage</span>
-              <h2 className="font-heading text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">
+              <span className="text-secondary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Heritage</span>
+              <h2 className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 md:mb-8 leading-tight">
                 Honoring the <br />
                 <span className="text-stone-400">Ancestral Art</span> <br />
                 of Indian Spices.
               </h2>
-              <p className="text-stone-400 text-lg leading-relaxed mb-8">
+              <p className="text-stone-400 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
                 Since 2010, BVR Spices has been more than just a brand; it's a bridge to the past. 
                 We source our ingredients from the same fields that produced spices for the 
                 ancient Silk Road, ensuring the same vibrancy and depth of flavor.
               </p>
-              <div className="grid grid-cols-2 gap-8">
+              <div className="grid grid-cols-2 gap-6 md:gap-8">
                 <div>
                   <h4 className="text-white font-bold text-xl mb-2">Direct Sourcing</h4>
                   <p className="text-stone-500 text-sm">Working hand-in-hand with heritage farmers.</p>
@@ -214,9 +230,9 @@ const Home = () => {
       </section>
 
       {/* Trust Indicators */}
-      <section className="py-24 bg-stone-50 border-y border-stone-100">
+      <section className="py-14 md:py-24 bg-stone-50 border-y border-stone-100">
         <div className="container-custom">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-16">
             {trustIndicators.map((item, index) => (
               <motion.div
                 key={item.title}
@@ -229,7 +245,7 @@ const Home = () => {
                 <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white shadow-sm flex items-center justify-center group-hover:bg-primary group-hover:shadow-premium group-hover:scale-110 transition-all duration-500 ease-out">
                   <item.icon className="w-10 h-10 text-primary group-hover:text-white transition-colors duration-500" />
                 </div>
-                <h3 className="font-heading font-bold text-xl text-stone-900 mb-2">
+                <h3 className="font-heading font-bold text-base sm:text-lg md:text-xl text-stone-900 mb-1.5 sm:mb-2">
                   {item.title}
                 </h3>
                 <p className="text-sm text-stone-500 max-w-[180px] mx-auto leading-relaxed">{item.description}</p>
@@ -252,23 +268,28 @@ const Home = () => {
             <span className="text-secondary font-medium text-sm uppercase tracking-wider">
               Our Collection
             </span>
-            <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-2 mb-4">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mt-2 mb-3 sm:mb-4">
               Bestselling Spices
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base">
               Discover our most loved spices, carefully selected and packed to bring
               authentic flavors to your kitchen.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:overflow-visible sm:pb-0">
             {isLoading ? (
-              <div className="col-span-full flex justify-center py-10">
+              <div className="flex justify-center w-full py-10 sm:col-span-full">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
               </div>
             ) : (
               bestsellers.map((product, index) => (
-                <ProductCard key={product.id} product={product} index={index} />
+                <div
+                  key={product.id}
+                  className="min-w-[75%] max-w-xs snap-start sm:min-w-0 sm:max-w-none"
+                >
+                  <ProductCard product={product} index={index} />
+                </div>
               ))
             )}
           </div>
@@ -296,50 +317,50 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-1/2 h-full bg-primary/5 -skew-x-12 translate-x-1/2" />
         
         <div className="container-custom relative z-10">
-          <div className="grid lg:grid-cols-2 gap-24 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-secondary font-bold text-sm uppercase tracking-[0.4em] mb-6 block">Our Quality Pillars</span>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-10 leading-tight">
+              <span className="text-secondary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-4 md:mb-6 block">Our Quality Pillars</span>
+              <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-10 leading-tight">
                 Crafting Purity for <br />
                 <span className="text-secondary">Discerning</span> Palates.
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-5 md:space-y-6">
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Leaf className="w-6 h-6 text-primary" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Leaf className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-lg mb-1">Traditional Sourcing</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-base sm:text-lg mb-1">Traditional Sourcing</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base">
                       We source our spices directly from trusted farmers across India,
                       ensuring freshness and authenticity in every batch.
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-6 h-6 text-primary" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Shield className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-lg mb-1">Quality Testing</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-base sm:text-lg mb-1">Quality Testing</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base">
                       Every batch undergoes rigorous quality checks to ensure purity,
                       flavor, and freedom from contaminants.
                     </p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Package className="w-6 h-6 text-primary" />
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Package className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-heading font-semibold text-lg mb-1">Careful Packaging</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-base sm:text-lg mb-1">Careful Packaging</h3>
+                    <p className="text-muted-foreground text-sm sm:text-base">
                       Our spices are hygienically packed in airtight containers to
                       preserve freshness and extend shelf life.
                     </p>
@@ -354,6 +375,7 @@ const Home = () => {
               viewport={{ once: true }}
               transition={{ duration: 1 }}
               className="relative"
+              style={{ y: qualityImageParallaxY }}
             >
               <div className="relative rounded-[3rem] overflow-hidden shadow-2xl">
                 <motion.img
@@ -375,7 +397,7 @@ const Home = () => {
       </section>
 
       {/* Customer Assurance */}
-      <section className="py-12 bg-background border-y border-border">
+      <section className="py-10 md:py-12 bg-background border-y border-border">
         <div className="container-custom">
           <div className="flex flex-wrap justify-center gap-6 md:gap-12">
             {qualityBadges.map((badge, index) => (
@@ -398,16 +420,16 @@ const Home = () => {
       {/* The BVR Process - Interactive Timeline */}
       <section className="section-padding bg-white relative overflow-hidden">
         <div className="container-custom">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <motion.span 
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-primary font-bold text-sm uppercase tracking-[0.4em] mb-4 block"
+              className="text-primary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-3 sm:mb-4 block"
             >
               The Science of Purity
             </motion.span>
-            <h2 className="font-heading text-4xl md:text-6xl font-bold text-stone-900 mb-6">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-stone-900 mb-4 sm:mb-6">
               How We <span className="text-primary italic">Perfect</span> Your Spices
             </h2>
           </div>
@@ -416,7 +438,7 @@ const Home = () => {
             {/* Connecting Line (Desktop) */}
             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-[2px] bg-stone-100 -translate-y-1/2 z-0" />
 
-            <div className="grid lg:grid-cols-3 gap-12 relative z-10">
+            <div className="grid lg:grid-cols-3 gap-8 md:gap-12 relative z-10">
               {[
                 { 
                   step: '01', 
@@ -436,21 +458,21 @@ const Home = () => {
                   desc: 'Every batch is tested for purity, pesticide residue, and flavor intensity in our labs.',
                   icon: CheckCircle 
                 }
-              ].map((item, idx) => (
-                <motion.div
+                  ].map((item, idx) => (
+                  <motion.div
                   key={item.step}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.2, duration: 0.6 }}
-                  className="bg-stone-50 rounded-[3rem] p-12 text-center border border-stone-100 shadow-xl hover:shadow-2xl transition-all duration-500 group"
+                    className="bg-stone-50 rounded-[2rem] md:rounded-[3rem] p-8 md:p-12 text-center border border-stone-100 shadow-xl hover:shadow-2xl transition-all duration-500 group"
                 >
-                  <div className="w-20 h-20 bg-primary text-white rounded-2xl flex items-center justify-center mx-auto mb-8 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500 shadow-lg shadow-primary/20">
-                    <item.icon className="w-10 h-10" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary text-white rounded-2xl flex items-center justify-center mx-auto mb-6 md:mb-8 transform -rotate-6 group-hover:rotate-0 transition-transform duration-500 shadow-lg shadow-primary/20">
+                    <item.icon className="w-8 h-8 md:w-10 md:h-10" />
                   </div>
-                  <span className="text-primary font-bold text-5xl opacity-10 mb-4 block">{item.step}</span>
-                  <h3 className="font-heading text-2xl font-bold text-stone-900 mb-4">{item.title}</h3>
-                  <p className="text-stone-500 leading-relaxed">
+                  <span className="text-primary font-bold text-3xl sm:text-4xl md:text-5xl opacity-10 mb-2 sm:mb-4 block">{item.step}</span>
+                  <h3 className="font-heading text-lg sm:text-xl md:text-2xl font-bold text-stone-900 mb-3 sm:mb-4">{item.title}</h3>
+                  <p className="text-stone-500 leading-relaxed text-sm sm:text-base">
                     {item.desc}
                   </p>
                 </motion.div>
@@ -463,39 +485,39 @@ const Home = () => {
       {/* Premium Testimonials Section */}
       <section className="section-padding bg-stone-50 overflow-hidden relative">
         <div className="container-custom">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="lg:w-1/3">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            <div className="lg:w-1/3 w-full">
               <motion.span 
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="text-primary font-bold text-sm uppercase tracking-[0.4em] mb-4 block"
+                className="text-primary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-3 sm:mb-4 block"
               >
                 Global Voices
               </motion.span>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-stone-900 mb-6 leading-tight">
+              <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-stone-900 mb-4 sm:mb-6 leading-tight">
                 Loved by <br />
                 <span className="text-primary italic">Chefs & Families</span> <br />
                 Alike
               </h2>
-              <p className="text-stone-500 mb-8 leading-relaxed">
+              <p className="text-stone-500 text-sm sm:text-base mb-6 sm:mb-8 leading-relaxed">
                 From professional kitchens to dining tables across the globe, 
                 our spices are the secret ingredient to authentic Indian flavors.
               </p>
-              <div className="flex gap-4">
-                <div className="p-4 bg-white rounded-2xl shadow-sm border border-stone-100 flex-1">
-                  <p className="text-stone-900 font-bold text-2xl">4.9/5</p>
+              <div className="flex gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4 bg-white rounded-2xl shadow-sm border border-stone-100 flex-1">
+                  <p className="text-stone-900 font-bold text-xl sm:text-2xl">4.9/5</p>
                   <p className="text-stone-400 text-xs uppercase tracking-widest">Average Rating</p>
                 </div>
-                <div className="p-4 bg-white rounded-2xl shadow-sm border border-stone-100 flex-1">
-                  <p className="text-stone-900 font-bold text-2xl">50k+</p>
+                <div className="p-3 sm:p-4 bg-white rounded-2xl shadow-sm border border-stone-100 flex-1">
+                  <p className="text-stone-900 font-bold text-xl sm:text-2xl">50k+</p>
                   <p className="text-stone-400 text-xs uppercase tracking-widest">Global Orders</p>
                 </div>
               </div>
             </div>
 
-            <div className="lg:w-2/3 relative">
-              <div className="grid md:grid-cols-2 gap-6">
+            <div className="lg:w-2/3 w-full relative">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                 {[
                   {
                     name: "Anita Sharma",
@@ -516,14 +538,14 @@ const Home = () => {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 + idx * 0.2, duration: 0.8 }}
-                    className="bg-white p-10 rounded-[2.5rem] shadow-xl border border-stone-100 relative"
+                    className="bg-white p-6 sm:p-8 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl border border-stone-100 relative"
                   >
                     <div className="flex gap-1 mb-6">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 text-secondary fill-secondary" />
                       ))}
                     </div>
-                    <p className="text-stone-700 italic mb-8 leading-relaxed text-lg">
+                    <p className="text-stone-700 italic mb-6 sm:mb-8 leading-relaxed text-base sm:text-lg">
                       "{testimonial.text}"
                     </p>
                     <div className="flex items-center gap-4">
@@ -545,18 +567,18 @@ const Home = () => {
       </section>
 
       {/* Sourcing & Origin Section */}
-      <section className="section-padding bg-stone-950 text-white overflow-hidden relative">
+      <section className="section-padding bg-stone-950 text-white overflow-hidden relative hidden md:block">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')]" />
         </div>
         
         <div className="container-custom relative z-10">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <motion.span 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-secondary font-bold text-sm uppercase tracking-[0.4em] mb-4 block"
+              className="text-secondary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-3 sm:mb-4 block"
             >
               The Journey of Purity
             </motion.span>
@@ -565,7 +587,7 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="font-heading text-4xl md:text-6xl font-bold mb-6"
+              className="font-heading text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6"
             >
               From the <span className="text-secondary italic">Red Soils</span> <br className="hidden md:block" />
               to Your Kitchen
@@ -575,14 +597,15 @@ const Home = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-stone-400 max-w-2xl mx-auto text-lg leading-relaxed"
+              className="text-stone-400 max-w-2xl mx-auto text-base md:text-lg leading-relaxed"
             >
               We source our spices directly from heritage farms across India's most fertile regions, 
               ensuring that every pinch carries the authentic soul of its origin.
             </motion.p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          {/* Region Cards - Mobile horizontal scroll, desktop grid */}
+          <div className="flex gap-4 overflow-x-auto pb-6 snap-x snap-mandatory hide-scrollbar md:grid md:grid-cols-3 md:gap-8 md:overflow-visible md:pb-0">
             {[
               { 
                 region: 'Guntur, Andhra Pradesh', 
@@ -609,9 +632,9 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.2, duration: 0.8 }}
-                className="group cursor-default"
+                className="group cursor-default min-w-[80%] max-w-sm snap-start md:min-w-0 md:max-w-none"
               >
-                <div className="relative h-[450px] overflow-hidden rounded-[2.5rem] mb-6 shadow-2xl">
+                <div className="relative h-[280px] sm:h-[340px] md:h-[450px] overflow-hidden rounded-[2rem] md:rounded-[2.5rem] mb-4 md:mb-6 shadow-2xl">
                   <img 
                     src={item.img} 
                     alt={item.spice} 
@@ -620,8 +643,8 @@ const Home = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                   <div className="absolute bottom-10 left-10 right-10">
                     <span className="text-secondary font-bold text-xs uppercase tracking-widest mb-2 block">{item.region}</span>
-                    <h3 className="font-heading text-3xl font-bold text-white mb-2">{item.spice}</h3>
-                    <p className="text-stone-300 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-y-4 group-hover:translate-y-0 text-balance">
+                    <h3 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{item.spice}</h3>
+                    <p className="text-stone-300 text-xs sm:text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-y-4 group-hover:translate-y-0 text-balance">
                       {item.desc}
                     </p>
                   </div>
@@ -633,7 +656,7 @@ const Home = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-24 bg-white overflow-hidden relative">
+      <section className="py-16 md:py-24 bg-white overflow-hidden relative">
         <div className="container-custom">
           <div className="glass-card !bg-stone-950 !border-stone-800 relative z-10 overflow-hidden">
             {/* Background Accent */}
@@ -644,28 +667,28 @@ const Home = () => {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="text-secondary font-bold text-sm uppercase tracking-[0.4em] mb-6 block"
+                className="text-secondary font-bold text-[11px] sm:text-xs uppercase tracking-[0.4em] mb-4 sm:mb-6 block"
               >
                 The Culinary Club
               </motion.span>
-              <h2 className="font-heading text-4xl md:text-5xl font-bold text-white mb-6">
+              <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
                 Receive Our <span className="text-secondary italic">Secret</span> Recipes
               </h2>
-              <p className="text-stone-400 text-lg mb-10 leading-relaxed">
+              <p className="text-stone-400 text-base md:text-lg mb-8 md:mb-10 leading-relaxed">
                 Join our community of flavor enthusiasts. Get monthly spice pairings, 
                 heritage recipes, and exclusive early access to our seasonal harvests.
               </p>
-              <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+              <form className="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-lg mx-auto">
                 <input 
                   type="email" 
                   placeholder="Enter your email" 
-                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-8 py-4 text-white placeholder:text-stone-600 focus:outline-none focus:border-secondary transition-colors"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-full px-4 py-3 md:px-8 md:py-4 text-white text-sm md:text-base placeholder:text-stone-600 focus:outline-none focus:border-secondary transition-colors"
                 />
-                <button type="button" className="btn-premium !px-12">
+                <button type="button" className="btn-premium !px-8 md:!px-12">
                   Join Now
                 </button>
               </form>
-              <p className="mt-6 text-stone-500 text-xs">By subscribing, you agree to our Privacy Policy and Terms of Service.</p>
+              <p className="mt-4 sm:mt-6 text-stone-500 text-[10px] sm:text-xs">By subscribing, you agree to our Privacy Policy and Terms of Service.</p>
             </div>
           </div>
         </div>
@@ -689,16 +712,16 @@ const Home = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="font-heading text-5xl md:text-7xl font-bold mb-8 leading-tight">
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-6xl font-bold mb-6 md:mb-8 leading-tight">
               Ready to Transform <br />
               <span className="text-secondary italic">Your Cooking?</span>
             </h2>
-            <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-primary-foreground/80 text-base md:text-lg mb-6 md:mb-8 max-w-2xl mx-auto">
               Experience the difference that quality makes. Order now and taste
               the authentic flavors of India.
             </p>
             <Link to="/products">
-              <button className="btn-premium !px-16 !py-6 !text-xl shadow-premium hover:shadow-hover">
+              <button className="btn-premium !px-10 !py-4 !text-lg md:!px-16 md:!py-6 md:!text-xl shadow-premium hover:shadow-hover">
                 Explore the Boutique
               </button>
             </Link>

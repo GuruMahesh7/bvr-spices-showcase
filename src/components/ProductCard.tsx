@@ -36,8 +36,8 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
           </Badge>
         )}
 
-        {/* Quick Actions Overlay */}
-        <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+        {/* Quick Actions Overlay - Desktop / Large Screens */}
+        <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center gap-3">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             whileHover={{ scale: 1 }}
@@ -76,6 +76,26 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
         </div>
       </div>
 
+      {/* Quick Actions - Mobile Friendly */}
+      <div className="mt-3 px-4 flex items-center justify-between gap-3 md:hidden">
+        <Link to={`/products/${product.id}`} className="flex-1">
+          <Button
+            variant="secondary"
+            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold tracking-wide text-xs uppercase"
+          >
+            View Details
+          </Button>
+        </Link>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full border-primary/40 text-primary hover:bg-primary/10 flex-shrink-0"
+          onClick={() => addToCart(product)}
+        >
+          <ShoppingCart className="w-5 h-5" />
+        </Button>
+      </div>
+
       {/* Content */}
       <div className="p-4 md:p-5">
         <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
@@ -90,9 +110,11 @@ const ProductCard = ({ product, index = 0 }: ProductCardProps) => {
 
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-baseline gap-2">
-            <span className="text-xl font-bold text-primary">₹{typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</span>
+            <span className="text-lg md:text-xl font-bold text-primary">
+              ₹{typeof product.price === 'number' ? product.price.toFixed(2) : product.price}
+            </span>
             {product.originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-xs md:text-sm text-muted-foreground line-through">
                 ₹{typeof product.originalPrice === 'number' ? product.originalPrice.toFixed(2) : product.originalPrice}
               </span>
             )}

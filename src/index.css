@@ -166,7 +166,7 @@
 
   .glass-card {
     @apply bg-white/5 backdrop-blur-xl border border-white/10
-           rounded-[2.5rem] p-8 md:p-12
+           rounded-[2rem] p-6 md:p-10
            shadow-2xl overflow-hidden;
   }
 
@@ -215,6 +215,15 @@
 }
 
 @layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
   .animate-fade-up {
     animation: fadeUp 0.6s ease-out forwards;
   }

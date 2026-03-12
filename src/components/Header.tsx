@@ -35,7 +35,7 @@ const Header = () => {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="announcement-bar">
+      {/* <div className="announcement-bar">
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ const Header = () => {
         >
           ✨ 1000% Natural | No Preservatives | Hygienically Packed ✨
         </motion.p>
-      </div>
+      </div> */}
 
       {/* Main Header */}
       <motion.header
