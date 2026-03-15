@@ -1,26 +1,35 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Loader2 } from 'lucide-react';
+import { Search, Loader2, X } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
-import { categories } from '@/data/products'; // Keeping categories static for now or fetch from backend if available
+import { categories } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { useProducts } from '@/hooks/useProducts';
 
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('featured'); // featured, price-low, price-high
+  const [sortBy, setSortBy] = useState('featured');
 
   const { data: products, isLoading, error } = useProducts();
 
   const filteredProducts = useMemo(() => {
     if (!products) return [];
-    return products.filter((product) => {
+    let filtered = products.filter((product) => {
       const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [products, selectedCategory, searchQuery]);
+
+    // Apply sorting
+    if (sortBy === 'price-low') {
+      filtered = [...filtered].sort((a, b) => (a.price || 0) - (b.price || 0));
+    } else if (sortBy === 'price-high') {
+      filtered = [...filtered].sort((a, b) => (b.price || 0) - (a.price || 0));
+    }
+
+    return filtered;
+  }, [products, selectedCategory, searchQuery, sortBy]);
 
   return (
     <div className="min-h-screen bg-stone-950">
@@ -67,86 +76,112 @@ const Products = () => {
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="py-4 sm:py-5 md:py-6 border-b border-stone-800 sticky top-[64px] md:top-[80px] bg-stone-950/95 backdrop-blur-xl z-40">
-        <div className="container-custom px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row gap-4 sm:gap-5 md:gap-6 md:items-center md:justify-between">
-            {/* Category Filters */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-2 md:pb-0 hide-scrollbar -mx-4 sm:mx-0 px-4 sm:px-0"
-            >
-              <Filter className="w-4 h-4 text-stone-500 flex-shrink-0" />
+      {/* Search & Filters - Mobile First Design */}
+      <section className="sticky top-[64px] md:top-[80px] bg-stone-950 border-b border-stone-800 z-40">
+        <div className="px-3 py-3 md:px-6 md:py-4">
+          {/* Search Input */}
+          <div className="relative mb-3 md:mb-4">
+            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-stone-900/50 border border-stone-700 rounded-lg md:rounded-xl pl-10 md:pl-12 pr-10 md:pr-12 py-2.5 md:py-3 text-sm md:text-base text-white placeholder:text-stone-500 focus:outline-none focus:border-primary transition-all min-h-[44px] md:min-h-[48px]"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+            )}
+          </div>
+
+          {/* Filter Row */}
+          <div className="flex items-center gap-2 md:gap-3">
+            {/* Category Chips - Horizontal Scroll */}
+            <div className="flex-1 flex items-center gap-2 md:gap-3 overflow-x-auto hide-scrollbar pb-1">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`flex-shrink-0 text-sm sm:text-base min-h-[44px] px-3 sm:px-4 py-2 rounded-full transition-colors ${
+                  className={`flex-shrink-0 px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all min-h-[36px] md:min-h-[40px] whitespace-nowrap ${
                     selectedCategory === category 
-                      ? 'text-white bg-white/10' 
-                      : 'text-muted-foreground hover:text-white'
+                      ? 'bg-primary text-white shadow-md' 
+                      : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
                   }`}
                 >
                   {category}
                 </button>
               ))}
-            </motion.div>
+            </div>
 
-            {/* Search & Sort */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full sm:w-56 md:w-64"
+            {/* Sort Dropdown */}
+            <div className="relative flex-shrink-0">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-stone-800 border border-stone-700 rounded-lg md:rounded-xl px-3 md:px-4 py-2 md:py-2.5 text-xs md:text-sm text-white focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer min-h-[36px] md:min-h-[40px] pr-8 md:pr-10"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1em' }}
               >
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-500" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="bg-white/5 border border-white/10 rounded-full pl-10 sm:pl-12 pr-4 sm:pr-6 py-2.5 sm:py-3 text-sm text-white placeholder:text-stone-600 focus:outline-none focus:border-secondary transition-all w-full font-medium min-h-[44px]"
-                />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="w-full sm:w-auto"
-              >
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-white/5 border border-white/10 rounded-full px-4 sm:px-6 py-2.5 sm:py-3 text-sm text-white focus:outline-none focus:border-secondary transition-all w-full sm:w-auto font-medium appearance-none cursor-pointer min-h-[44px]"
-                  style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', backgroundSize: '1.2em' }}
-                >
-                  <option value="featured" className="bg-stone-900">Featured</option>
-                  <option value="price-low" className="bg-stone-900">Price: Low to High</option>
-                  <option value="price-high" className="bg-stone-900">Price: High to Low</option>
-                </select>
-              </motion.div>
+                <option value="featured" className="bg-stone-900">Featured</option>
+                <option value="price-low" className="bg-stone-900">Price: Low to High</option>
+                <option value="price-high" className="bg-stone-900">Price: High to Low</option>
+              </select>
             </div>
           </div>
+
+          {/* Active Filters Display */}
+          {(selectedCategory !== 'All' || searchQuery) && (
+            <div className="mt-2 md:mt-3 flex items-center gap-2 flex-wrap">
+              <span className="text-xs md:text-sm text-stone-400">Active filters:</span>
+              {selectedCategory !== 'All' && (
+                <button
+                  onClick={() => setSelectedCategory('All')}
+                  className="flex items-center gap-1.5 bg-stone-800 text-stone-300 px-2.5 py-1 rounded-md text-xs md:text-sm hover:bg-stone-700 transition-colors"
+                >
+                  {selectedCategory}
+                  <X className="w-3 h-3 md:w-4 md:h-4" />
+                </button>
+              )}
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="flex items-center gap-1.5 bg-stone-800 text-stone-300 px-2.5 py-1 rounded-md text-xs md:text-sm hover:bg-stone-700 transition-colors"
+                >
+                  "{searchQuery}"
+                  <X className="w-3 h-3 md:w-4 md:h-4" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Products Grid */}
-      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-stone-50 min-h-[60vh]">
-        <div className="container-custom px-4 sm:px-6">
+      <section className="py-4 sm:py-6 md:py-8 lg:py-12 bg-stone-50 min-h-[60vh]">
+        <div className="container-custom px-3 sm:px-4 md:px-6">
+          {/* Results Count */}
+          {!isLoading && !error && (
+            <div className="mb-4 px-1">
+              <p className="text-xs text-stone-500">
+                {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'} found
+              </p>
+            </div>
+          )}
+
           {isLoading ? (
             <div className="flex justify-center items-center py-20">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
           ) : error ? (
             <div className="text-center py-20 text-red-500 px-4">
-              Error loading products. Please try again later.
+              <p className="text-sm">Error loading products. Please try again later.</p>
             </div>
           ) : filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
               {filteredProducts.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />
               ))}
@@ -155,20 +190,23 @@ const Products = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-20 sm:py-32 px-4"
+              className="text-center py-16 sm:py-24 px-4"
             >
-              <Search className="w-12 h-12 sm:w-16 sm:h-16 text-stone-200 mx-auto mb-4 sm:mb-6" />
-              <p className="text-stone-500 text-lg sm:text-xl font-heading mb-4 sm:mb-6">
-                Shadows found, but no spices match your request.
+              <Search className="w-12 h-12 text-stone-300 mx-auto mb-4" />
+              <p className="text-stone-600 text-base font-medium mb-4">
+                No products found
+              </p>
+              <p className="text-stone-500 text-sm mb-6">
+                Try adjusting your filters or search terms
               </p>
               <button
                 onClick={() => {
                   setSelectedCategory('All');
                   setSearchQuery('');
                 }}
-                className="btn-premium !px-8 sm:!px-10 min-h-[44px] text-sm sm:text-base"
+                className="bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors min-h-[44px]"
               >
-                Clear Filters
+                Clear All Filters
               </button>
             </motion.div>
           )}
