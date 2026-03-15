@@ -60,32 +60,32 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4 py-12">
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 py-8 sm:py-12">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-md bg-card border border-border rounded-xl shadow-lg p-8"
+                className="w-full max-w-md bg-card border border-border rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8"
             >
-                <div className="text-center mb-8">
-                    <h1 className="font-heading text-3xl font-bold mb-2">Create Account</h1>
-                    <p className="text-muted-foreground">Join BVR Spices today</p>
+                <div className="text-center mb-6 sm:mb-8">
+                    <h1 className="font-heading text-2xl sm:text-3xl font-bold mb-2">Create Account</h1>
+                    <p className="text-muted-foreground text-sm sm:text-base">Join BVR Spices today</p>
                 </div>
 
-                <form onSubmit={submitHandler} className="space-y-6">
+                <form onSubmit={submitHandler} className="space-y-5 sm:space-y-6">
                     <div className="space-y-2">
                         <label className="text-sm font-medium" htmlFor="name">
                             Full Name
                         </label>
                         <div className="relative">
-                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                             <input
                                 id="name"
                                 type="text"
                                 placeholder="Enter your name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="input-styled pl-10 w-full"
+                                className="input-styled pl-10 sm:pl-12 w-full min-h-[44px] text-sm sm:text-base"
                                 required
                             />
                         </div>
@@ -96,14 +96,14 @@ const Register = () => {
                             Email Address
                         </label>
                         <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                             <input
                                 id="email"
                                 type="email"
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="input-styled pl-10 w-full"
+                                className="input-styled pl-10 sm:pl-12 w-full min-h-[44px] text-sm sm:text-base"
                                 required
                             />
                         </div>
@@ -114,14 +114,14 @@ const Register = () => {
                             Password
                         </label>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                             <input
                                 id="password"
                                 type="password"
                                 placeholder="Create a password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="input-styled pl-10 w-full"
+                                className="input-styled pl-10 sm:pl-12 w-full min-h-[44px] text-sm sm:text-base"
                                 required
                             />
                         </div>
@@ -132,14 +132,14 @@ const Register = () => {
                             Confirm Password
                         </label>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                             <input
                                 id="confirmPassword"
                                 type="password"
                                 placeholder="Confirm your password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="input-styled pl-10 w-full"
+                                className="input-styled pl-10 sm:pl-12 w-full min-h-[44px] text-sm sm:text-base"
                                 required
                             />
                         </div>
@@ -148,19 +148,19 @@ const Register = () => {
                     <Button
                         type="submit"
                         size="lg"
-                        className="w-full btn-primary"
+                        className="w-full btn-primary min-h-[44px] sm:min-h-[48px] text-sm sm:text-base"
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                            <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin mr-2" />
                         ) : (
-                            <ArrowRight className="w-5 h-5 mr-2" />
+                            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         )}
                         Sign Up
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center text-sm">
+                <div className="mt-6 sm:mt-8 text-center text-xs sm:text-sm">
                     <p className="text-muted-foreground">
                         Already have an account?{' '}
                         <Link to="/login" className="text-primary font-medium hover:underline">

@@ -26,6 +26,8 @@ export interface Product {
   usage?: string;
   storage?: string;
   badge?: string;
+  rating?: number;
+  numReviews?: number;
 }
 
 export interface CartItem extends Product {
