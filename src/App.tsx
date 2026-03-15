@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AdminLayout from "./admin/components/AdminLayout";
@@ -34,10 +35,12 @@ const queryClient = new QueryClient();
 const AppContent = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
   return (
     <div className="flex flex-col min-h-screen">
-      {!isAdminRoute && <Header />}
+      <ScrollToTop />
+      {!isAdminRoute && !isAuthPage && <Header />}
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -71,7 +74,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      {!isAdminRoute && <Footer />}
+      {!isAdminRoute && !isAuthPage && <Footer />}
     </div>
   );
 };

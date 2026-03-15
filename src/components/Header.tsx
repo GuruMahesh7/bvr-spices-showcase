@@ -35,7 +35,7 @@ const Header = () => {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="announcement-bar">
+      {/* <div className="announcement-bar">
         <motion.p
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -43,7 +43,7 @@ const Header = () => {
         >
           ✨ 1000% Natural | No Preservatives | Hygienically Packed ✨
         </motion.p>
-      </div>
+      </div> */}
 
       {/* Main Header */}
       <motion.header
@@ -189,7 +189,7 @@ const Header = () => {
               transition={{ duration: 0.3 }}
               className="md:hidden bg-background border-t border-border overflow-hidden"
             >
-              <nav className="container-custom py-4 flex flex-col gap-2">
+              <nav className="container-custom py-4 flex flex-col gap-1">
                 {navLinks.map((link, index) => (
                   <motion.div
                     key={link.path}
@@ -199,7 +199,7 @@ const Header = () => {
                   >
                     <Link
                       to={link.path}
-                      className={`block py-3 px-4 rounded-lg font-medium transition-colors ${location.pathname === link.path
+                      className={`block py-3.5 px-4 rounded-lg font-medium transition-colors min-h-[44px] flex items-center ${location.pathname === link.path
                         ? 'bg-primary/10 text-primary'
                         : 'text-foreground hover:bg-muted'
                         }`}
@@ -216,7 +216,7 @@ const Header = () => {
                   >
                     <Link
                       to="/admin/dashboard"
-                      className="block py-3 px-4 rounded-lg font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors"
+                      className="block py-3.5 px-4 rounded-lg font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors min-h-[44px] flex items-center"
                     >
                       Admin Panel
                     </Link>

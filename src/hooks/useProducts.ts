@@ -20,6 +20,8 @@ const mapProduct = (p: any): Product => ({
     ingredients: p.ingredients,
     usage: p.usageTips, // Backend uses usageTips
     badge: p.isBestSeller ? 'Bestseller' : undefined,
+    rating: p.rating || 4.5,
+    numReviews: p.numReviews || 0,
 });
 
 export const useProducts = () => {
